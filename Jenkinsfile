@@ -15,6 +15,7 @@ pipeline{
                     echo 'Archiving Artifacts'
                     archiveArtifacts artifacts: 'target/*.war'
                 }
+        }
         stage('Maven Test'){
             steps{
                 sh 'mvn test'
@@ -24,7 +25,7 @@ pipeline{
                     junit 'target/surefire-reports/*.xml'
                 }
             }
-            
+        
         }
 
     }
