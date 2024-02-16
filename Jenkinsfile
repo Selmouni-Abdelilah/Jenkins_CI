@@ -15,6 +15,7 @@ pipeline{
                     echo 'Archiving Artifacts'
                     archiveArtifacts artifacts: 'target/*.war'
                 }
+            }
         }
         stage('Maven Test'){
             steps{
