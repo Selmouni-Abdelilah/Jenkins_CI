@@ -29,7 +29,7 @@ pipeline{
                         -Dsonar.host.url=http://localhost:9090 \ 
                         -Dsonar.token=token_sonar \
                         -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target\ "
+                        -Dsonar.java.binaries=target "
                     }
                 }       
             }
