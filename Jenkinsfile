@@ -61,7 +61,7 @@ pipeline{
         }
         stage('Build Docker Image') {         
             steps{                
-                sh 'docker build -t jenkinsci:$BUILD_NUMBER .'              
+                sh 'docker build -t abdelilahone/jenkinsci:$BUILD_NUMBER .'              
       }           
     }
     stage('Login to Docker Hub') {         
@@ -71,7 +71,7 @@ pipeline{
     }               
     stage('Push Image to Docker Hub') {         
          steps{                            
-	        sh 'docker push jenkinsci:$BUILD_NUMBER'   
+	        sh 'docker push abdelilahone/jenkinsci:$BUILD_NUMBER'   
       }           
     } 
 
