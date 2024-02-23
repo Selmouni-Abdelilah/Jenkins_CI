@@ -61,17 +61,17 @@ pipeline{
         }
         stage('Build Docker Image') {         
             steps{                
-                sh 'sudo docker build -t jenkinsci:$BUILD_NUMBER .'              
+                sh 'docker build -t jenkinsci:$BUILD_NUMBER .'              
       }           
     }
     stage('Login to Docker Hub') {         
         steps{                            
-	        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                            
+	        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                            
       }           
     }               
     stage('Push Image to Docker Hub') {         
          steps{                            
-	        sh 'sudo docker push jenkinsci:$BUILD_NUMBER'   
+	        sh 'docker push jenkinsci:$BUILD_NUMBER'   
       }           
     } 
 
