@@ -23,11 +23,11 @@ pipeline{
                     def scannerHome = tool 'Sonar-Scanner';
                     withSonarQubeEnv(credentialsId: 'token_sonar',installationName:'Sonarqube'){
                         //replace http://localhost:9090 with your sonarQube server Url
+                        def token_sonar=token_sonar
                         sh """ ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=library \
                         -Dsonar.projectName=CICD \
                         -Dsonar.host.url='http://localhost:9090' \
-                        -Dsonar.token=token_sonar \
                         -Dsonar.sources=src \
                         -Dsonar.java.binaries=target """
                     }
