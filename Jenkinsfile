@@ -11,6 +11,7 @@ pipeline{
         }
         stage('Maven Build'){
             steps {
+		sh 'mvn -N io.takari:maven:wrapper'
                 sh 'mvn -B -DskipTests clean package'
             }
             post {
