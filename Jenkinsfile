@@ -26,7 +26,7 @@ pipeline{
                         sh """ ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=library \
                         -Dsonar.projectName=CICD \
-                        -Dsonar.host.url=http://localhost:9090 \ 
+                        -Dsonar.host.url='http://localhost:9090' \
                         -Dsonar.token=token_sonar \
                         -Dsonar.sources=src \
                         -Dsonar.java.binaries=target """
