@@ -48,6 +48,16 @@ pipeline{
                 }
             }
         }
+	stage('Dependency Check Report') {
+            steps {
+                dependencyCheck additionalArguments: ''' 
+                    -o "./" 
+                    -s "./"
+                    -f "ALL" 
+                    --prettyPrint''', odcInstallation: 'D_check'
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }    
+        } 
         stage('SCA') {  
             steps {
                     snykSecurity(
