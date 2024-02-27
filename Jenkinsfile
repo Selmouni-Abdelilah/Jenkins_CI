@@ -1,7 +1,9 @@
 pipeline{
     agent any
     environment {     
-        DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')     
+        DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')    
+        AKS_CLUSTER_NAME = tpdevopscluster
+        RESOURCE_GROUP = rg-devops
     } 
     stages{
         stage('Fetch the code') {
@@ -84,40 +86,53 @@ pipeline{
         stage('Build Docker Image') {         
             steps{                
                 sh 'docker build --rm -t abdelilahone/jenkinsci:$BUILD_NUMBER .'              
-      }           
-    }
-    stage('Login to Docker Hub') {         
-        steps{                            
-	        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                            
-      }           
-    }
-    stage("Docker image scanning"){
-            steps {
-                script{
-                // Install trivy
-                sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s  v0.44.1'
-                sh 'chmod +x ./bin/trivy'
-                sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl'
-                def dockerImageName = 'abdelilahone/jenkinsci:$BUILD_NUMBER'
-                // Scan all vuln levels
-                sh "./bin/trivy image --ignore-unfixed --scanners vuln --vuln-type os,library --format template --template @html.tpl -o trivy-scan.html ${dockerImageName}"      
-                    publishHTML target : [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: '.',
-                        reportFiles: 'trivy-scan.html',
-                        reportName: 'Trivy Scan',
-                        reportTitles: 'Trivy Scan'
-                    ]
-        
+            }           
+        }
+        stage('Login to Docker Hub') {         
+            steps{                            
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                            
+        }           
+        }
+        stage("Docker image scanning"){
+                steps {
+                    script{
+                    // Install trivy
+                    sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s  v0.44.1'
+                    sh 'chmod +x ./bin/trivy'
+                    sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl'
+                    def dockerImageName = 'abdelilahone/jenkinsci:$BUILD_NUMBER'
+                    // Scan all vuln levels
+                    sh "./bin/trivy image --ignore-unfixed --scanners vuln --vuln-type os,library --format template --template @html.tpl -o trivy-scan.html ${dockerImageName}"      
+                        publishHTML target : [
+                            allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: '.',
+                            reportFiles: 'trivy-scan.html',
+                            reportName: 'Trivy Scan',
+                            reportTitles: 'Trivy Scan'
+                        ]
+            
+                    }
+                }
+            }                
+        stage('Push Image to Docker Hub') {         
+            steps{                            
+                sh 'docker push abdelilahone/jenkinsci:$BUILD_NUMBER'   
+        }           
+        }
+        stage('Azure login'){
+            steps{
+                withCredentials([azureServicePrincipal('Azure_credentials')]) {
+                    sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID'
                 }
             }
-        }                
-    stage('Push Image to Docker Hub') {         
-         steps{                            
-	        sh 'docker push abdelilahone/jenkinsci:$BUILD_NUMBER'   
-      }           
-    }
+        }
+        stage('Deploy to AKS') {
+            steps {
+                sh 'az aks get-credentials --name $AKS_CLUSTER_NAME --resource-group $RESOURCE_GROUP'
+                sh "helm upgrade my-project --set image.repository=abdelilahone/jenkinsci:${BUILD_NUMBER} ./project-chart"
+            }
+        }
     }
 }
