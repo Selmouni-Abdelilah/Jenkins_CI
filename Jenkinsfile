@@ -2,8 +2,8 @@ pipeline{
     agent any
     environment {     
         DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')    
-        AKS_CLUSTER_NAME = tpdevopscluster
-        RESOURCE_GROUP = rg-devops
+        AKS_CLUSTER_NAME = 'tpdevopscluster'
+        RESOURCE_GROUP = 'rg-devops'
     } 
     stages{
         stage('Fetch the code') {
