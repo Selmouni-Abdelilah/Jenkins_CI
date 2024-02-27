@@ -3,7 +3,7 @@ pipeline{
     environment {     
         DOCKERHUB_CREDENTIALS= credentials('dockerhubcredentials')    
         AKS_CLUSTER_NAME = 'tpdevopscluster'
-        RESOURCE_GROUP = 'rg-devops'
+        RESOURCE_GROUP = 'tpdevopscluster_group'
     } 
     stages{
         stage('Fetch the code') {
