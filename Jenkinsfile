@@ -131,7 +131,7 @@ pipeline{
         stage('Deploy to AKS') {
             steps {
                 sh 'az aks get-credentials --name $AKS_CLUSTER_NAME --resource-group $RESOURCE_GROUP'
-                sh "helm upgrade my-project --set image.repository=abdelilahone/jenkinsci:${BUILD_NUMBER} ./project-chart"
+                sh "helm install my-project --set image.repository=abdelilahone/jenkinsci:${BUILD_NUMBER} ./project-chart"
             }
         }
     }
